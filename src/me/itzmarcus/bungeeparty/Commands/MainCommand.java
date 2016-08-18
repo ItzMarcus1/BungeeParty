@@ -38,6 +38,10 @@ public class MainCommand extends Command {
                 }
 
                 // TODO: Auto create the party if the main player does not have a party, then invite the invited player.
+            } else if(args[0].equalsIgnoreCase("kick")) {
+                String kickedPlayer = args[1];
+
+                // TODO: Check if the player and the main player are in the same party. Then kick the player.
             }
         }
     }
