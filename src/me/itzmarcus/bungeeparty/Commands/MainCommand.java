@@ -1,5 +1,6 @@
 package me.itzmarcus.bungeeparty.Commands;
 
+import me.itzmarcus.bungeeparty.MySQL.ConnectionHandler;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -14,6 +15,8 @@ public class MainCommand extends Command {
         super("party");
     }
 
+    ConnectionHandler c = new ConnectionHandler();
+
     @Override
     public void execute(CommandSender sender, String[] args) {
         ProxiedPlayer p = (ProxiedPlayer) sender;
@@ -27,7 +30,7 @@ public class MainCommand extends Command {
             p.sendMessage("§6----------------------------------------------------");
         } else if(args.length == 1) {
             if(args[0].equalsIgnoreCase("disband")) {
-                // Disband party
+                c.createTeam(p.getName());
             }
         } else if(args.length == 2) {
             if(args[0].equalsIgnoreCase("invite")) {
