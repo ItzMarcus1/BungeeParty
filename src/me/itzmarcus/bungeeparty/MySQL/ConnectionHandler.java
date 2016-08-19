@@ -54,6 +54,28 @@ public class ConnectionHandler {
             sql.close();
             set.close();
 
+            ProxyServer.getInstance().getPlayer(player).sendMessage("§cYou are the owner of another party.");
+            return status;
+        } catch (Exception e) {
+            e.printStackTrace();
+            ProxyServer.getInstance().getPlayer(player).sendMessage("§c§lSomething went wrong. Contact an administrator.");
+            return false;
+        } finally {
+            closeConnection();
+        }
+    }
+
+    public boolean playerHasPartyMemberID(String player, String id) {
+        openConnection();
+        try {
+            PreparedStatement sql = connection.prepareStatement("SELECT * FROM `data` WHERE member_" + id + "=?");
+            sql.setString(1, player);
+            ResultSet set = sql.executeQuery();
+            boolean status = set.next();
+
+            sql.close();
+            set.close();
+
             ProxyServer.getInstance().getPlayer(player).sendMessage("§cYou already have a party.");
             return status;
         } catch (Exception e) {
@@ -65,14 +87,46 @@ public class ConnectionHandler {
         }
     }
 
+    public String getMember(String player, String id) {
+        openConnection();
+        try {
+            PreparedStatement sql = connection.prepareStatement("SELECT * FROM `data` WHERE leader=?");
+            sql.setString(1, player);
+            ResultSet set = sql.executeQuery();
+            String name = String.valueOf(set.next());
+
+            sql.close();
+            set.close();
+
+            return name;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "none";
+        } finally {
+            closeConnection();
+        }
+    }
+
+    public int getTotalMembers(String leader) {
+            int memberCount = 0;
+            int id = 1;
+            for(int i = 0; i < 4; i++) {
+                if(!getMember(leader, String.valueOf(id)).equalsIgnoreCase("none")) {
+                    memberCount++;
+                }
+                id++;
+            }
+        return memberCount;
+    }
+
     public void createParty(String leader) {
-        if(!playerHasParty(leader)) {
+        if(!playerHasParty(leader) && !playerHasPartyMemberID(leader, "1") && !playerHasPartyMemberID(leader, "2") && !playerHasPartyMemberID(leader, "3") && !playerHasPartyMemberID(leader, "4")) {
             openConnection();
             try {
                 PreparedStatement sql = connection.prepareStatement("INSERT INTO `data` values(?,?,?,?,?)");
                 sql.setString(1, leader);
-                sql.setString(2, "none");
-                sql.setString(3, "none");
+                sql.setString(2, "test");
+                sql.setString(3, "marcus");
                 sql.setString(4, "none");
                 sql.setString(5, "none");
                 sql.execute();

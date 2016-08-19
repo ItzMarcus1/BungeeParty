@@ -25,12 +25,14 @@ public class MainCommand extends Command {
             p.sendMessage("");
             p.sendMessage("§8» §e/party invite <player> §8- §aInvite a player to your party.");
             p.sendMessage("§8» §e/party kick <player> §8- §aKick a player from your party.");
+            p.sendMessage("§8» §e/party accept <player> §8- §aAccept a Party invite.");
             p.sendMessage("§8» §e/party disband §8- §aDisband your party.");
             p.sendMessage("");
             p.sendMessage("§6----------------------------------------------------");
         } else if(args.length == 1) {
             if(args[0].equalsIgnoreCase("disband")) {
-                c.createTeam(p.getName());
+                c.createParty(p.getName());
+                p.sendMessage("" + c.getTotalMembers(p.getName()));
             }
         } else if(args.length == 2) {
             if(args[0].equalsIgnoreCase("invite")) {
@@ -45,6 +47,10 @@ public class MainCommand extends Command {
                 String kickedPlayer = args[1];
 
                 // TODO: Check if the player and the main player are in the same party. Then kick the player.
+            } else if(args[0].equalsIgnoreCase("accept")) {
+                String leaderPlayer = args[1];
+
+                // TODO: Accept the invite.
             }
         }
     }
