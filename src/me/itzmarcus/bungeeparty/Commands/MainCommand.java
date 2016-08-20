@@ -31,8 +31,11 @@ public class MainCommand extends Command {
             p.sendMessage("§6----------------------------------------------------");
         } else if(args.length == 1) {
             if(args[0].equalsIgnoreCase("disband")) {
-                c.createParty(p.getName());
-                p.sendMessage("" + c.getTotalMembers(p.getName()));
+                if(c.isPartyLeader(p.getName())) {
+                    c.disbandParty(p.getName());
+                } else {
+                    p.sendMessage("§cYou are not the leader of any party.");
+                }
             }
         } else if(args.length == 2) {
             if(args[0].equalsIgnoreCase("invite")) {
@@ -41,16 +44,18 @@ public class MainCommand extends Command {
                     p.sendMessage("§cThis player is currently not online.");
                     return;
                 }
-
-                // TODO: Auto create the party if the main player does not have a party, then invite the invited player.
+                c.createParty(p.getName(), invitedPlayer.getName());
             } else if(args[0].equalsIgnoreCase("kick")) {
                 String kickedPlayer = args[1];
 
                 // TODO: Check if the player and the main player are in the same party. Then kick the player.
             } else if(args[0].equalsIgnoreCase("accept")) {
                 String leaderPlayer = args[1];
-
-                // TODO: Accept the invite.
+                if(!c.hasPendingRequest(p.getName())) {
+                    p.sendMessage("§cYou don't have any pending requests.");
+                } else {
+                    c.acceptInvite(p.getName());
+                }
             }
         }
     }
