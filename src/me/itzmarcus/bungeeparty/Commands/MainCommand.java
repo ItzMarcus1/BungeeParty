@@ -1,5 +1,6 @@
 package me.itzmarcus.bungeeparty.Commands;
 
+import me.itzmarcus.bungeeparty.Core;
 import me.itzmarcus.bungeeparty.MySQL.ConnectionHandler;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -11,11 +12,13 @@ import net.md_5.bungee.api.plugin.Command;
  */
 public class MainCommand extends Command {
 
-    public MainCommand() {
+    Core plugin;
+    public MainCommand(Core instance) {
         super("party");
+        plugin = instance;
     }
 
-    ConnectionHandler c = new ConnectionHandler();
+    ConnectionHandler c = new ConnectionHandler(plugin);
 
     @Override
     public void execute(CommandSender sender, String[] args) {
@@ -56,7 +59,7 @@ public class MainCommand extends Command {
                 c.invitePlayer(p.getName(), invitedPlayer.getName());
             } else if(args[0].equalsIgnoreCase("kick")) {
                 String kickedPlayer = args[1];
-                c.removeMember(p.getName(), kickedPlayer);
+                p.sendMessage("§c§lThis command is still undergoing testing.");
             } else if(args[0].equalsIgnoreCase("accept")) {
                 String leaderPlayer = args[1];
                 if(!c.hasPendingRequest(p.getName())) {

@@ -1,7 +1,13 @@
 package me.itzmarcus.bungeeparty.MySQL;
 
+import me.itzmarcus.bungeeparty.Core;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.config.ConfigurationProvider;
+import net.md_5.bungee.config.YamlConfiguration;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,6 +19,11 @@ import java.util.HashMap;
  * Created by marcus on 18-08-2016.
  */
 public class ConnectionHandler {
+
+    Core plugin;
+    public ConnectionHandler(Core instance) {
+        plugin = instance;
+    }
 
     public static Connection connection;
     private String connect;
@@ -28,11 +39,13 @@ public class ConnectionHandler {
 
     public void openConnection() {
         try{
-            host = "94.23.12.84";
+            File file = new File(plugin.getDataFolder().getPath(), "database.yml");
+            Configuration config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
+            host = config.getString("ip");
             port = "3306";
-            database = "BungeeParty";
-            user = "ItzMarcus";
-            password = "marcus2001";
+            database = config.getString("database");
+            user = config.getString("user");
+            password = config.getString("password");
             connect = "jdbc:mysql://" + host + ":" + port + "/" + database + "?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&" + "user=" + user + "&password=" + password;
             connection = DriverManager.getConnection(connect);
         }catch (Exception e) {
@@ -141,30 +154,7 @@ public class ConnectionHandler {
     public void removeMember(String leader, String member) {
         openConnection();
         try {
-            String memberID = "";
-            PreparedStatement sql = connection.prepareStatement("SELECT * FROM `data` WHERE leader=?");
-            sql.setString(1, leader);
-
-            ResultSet set = sql.executeQuery();
-            for(int i = 1; i <= maxPartyMembers; i++) {
-                set.next();
-                if(set.getString("member_" + i).equalsIgnoreCase(member)) {
-                    memberID = "member_" + i;
-                    return;
-                }
-            }
-
-            PreparedStatement memberUpdate = connection.prepareStatement("UPDATE ´data´ SET " + "member_1" + "=? WHERE leader=?");
-            memberUpdate.setString(1, "null");
-            memberUpdate.setString(2, leader);
-            memberUpdate.executeUpdate();
-
-            sql.close();
-            set.close();
-            memberUpdate.close();
-
-            ProxyServer.getInstance().getPlayer(leader).sendMessage("§aYou have kicked " + member + " out of your party.");
-            ProxyServer.getInstance().getPlayer(member).sendMessage("§aYou have benn kicked out of your party.");
+            // TODO
         } catch (Exception e) {
             e.printStackTrace();
             ProxyServer.getInstance().getPlayer(leader).sendMessage("§c§lSomething went wrong. Contact an administrator.");
