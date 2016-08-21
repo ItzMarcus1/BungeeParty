@@ -138,6 +138,41 @@ public class ConnectionHandler {
         }
     }
 
+    public void removeMember(String leader, String member) {
+        openConnection();
+        try {
+            String memberID = "";
+            PreparedStatement sql = connection.prepareStatement("SELECT * FROM `data` WHERE leader=?");
+            sql.setString(1, leader);
+
+            ResultSet set = sql.executeQuery();
+            for(int i = 1; i <= maxPartyMembers; i++) {
+                set.next();
+                if(set.getString("member_" + i).equalsIgnoreCase(member)) {
+                    memberID = "member_" + i;
+                    return;
+                }
+            }
+
+            PreparedStatement memberUpdate = connection.prepareStatement("UPDATE ´data´ SET " + "member_1" + "=? WHERE leader=?");
+            memberUpdate.setString(1, "null");
+            memberUpdate.setString(2, leader);
+            memberUpdate.executeUpdate();
+
+            sql.close();
+            set.close();
+            memberUpdate.close();
+
+            ProxyServer.getInstance().getPlayer(leader).sendMessage("§aYou have kicked " + member + " out of your party.");
+            ProxyServer.getInstance().getPlayer(member).sendMessage("§aYou have benn kicked out of your party.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            ProxyServer.getInstance().getPlayer(leader).sendMessage("§c§lSomething went wrong. Contact an administrator.");
+        } finally {
+            closeConnection();
+        }
+    }
+
     public void addMember(String leader, String member) {
         openConnection();
         try {
@@ -227,15 +262,18 @@ public class ConnectionHandler {
             try {
                 PreparedStatement sql = connection.prepareStatement("INSERT INTO `data` values(?,?,?,?,?)");
                 sql.setString(1, leader);
-                sql.setString(2, "null");
+                sql.setString(2, invitedPlayer);
                 sql.setString(3, "null");
                 sql.setString(4, "null");
                 sql.setString(5, "null");
                 sql.execute();
                 sql.close();
 
-                ProxyServer.getInstance().getPlayer(leader).sendMessage("§aYou have created a party.");
-                invitePlayer(leader, invitedPlayer);
+                ProxyServer.getInstance().getPlayer(getPendingRequest(leader)).sendMessage("§a" + leader + " has joined your party.");
+                ProxyServer.getInstance().getPlayer(invitedPlayer).sendMessage("§aYou have joined " + invitedPlayer + "'s party.");
+
+                invitations.remove(leader);
+                invitations.remove(invitedPlayer);
             } catch (Exception e) {
                 e.printStackTrace();
                 ProxyServer.getInstance().getPlayer(leader).sendMessage("§c§lSomething went wrong. Contact an administrator.");
