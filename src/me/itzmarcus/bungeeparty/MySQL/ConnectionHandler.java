@@ -208,6 +208,10 @@ public class ConnectionHandler {
     }
 
     public void invitePlayer(String inviter, String invited) {
+        if(inviter.equals(invited)) {
+            ProxyServer.getInstance().getPlayer(inviter).sendMessage("§cYou cannot invite yourself to a party!");
+            return;
+        }
         if(getTotalPartyMembersCount(inviter) >= 4) {
             ProxyServer.getInstance().getPlayer(inviter).sendMessage("§cYour party is currently full.");
             return;
