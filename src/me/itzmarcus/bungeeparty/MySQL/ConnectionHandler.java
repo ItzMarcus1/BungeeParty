@@ -64,7 +64,7 @@ public class ConnectionHandler {
     public boolean isPartyLeader(String leaderName) {
         openConnection();
         try{
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM `data` WHERE leader=?;");
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM `party` WHERE leader=?;");
             statement.setString(1, leaderName);
             ResultSet result = statement.executeQuery();
 
@@ -84,7 +84,7 @@ public class ConnectionHandler {
         try{
 
             for(int i = 1; i <= 3; i++){
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM `data` WHERE member_"+i+"=?;");
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM `party` WHERE member_"+i+"=?;");
                 statement.setString(1, name);
 
                 ResultSet result = statement.executeQuery();
@@ -110,7 +110,7 @@ public class ConnectionHandler {
         try {
             ArrayList<String> members = new ArrayList<>();
             for(int i = 1; i <= maxPartyMembers; i++){
-                PreparedStatement statement = connection.prepareStatement("SELECT member_"+i+" FROM `data` WHERE leader=?;");
+                PreparedStatement statement = connection.prepareStatement("SELECT member_"+i+" FROM `party` WHERE leader=?;");
                 statement.setString(1, leader);
                 ResultSet result = statement.executeQuery();
 
@@ -139,7 +139,7 @@ public class ConnectionHandler {
             if(invitations.containsKey(player)) {
                 invitations.remove(player);
             }
-            PreparedStatement sql = connection.prepareStatement("DELETE FROM `data` WHERE leader=?");
+            PreparedStatement sql = connection.prepareStatement("DELETE FROM `party` WHERE leader=?");
             sql.setString(1, player);
             sql.executeUpdate();
 
@@ -168,7 +168,7 @@ public class ConnectionHandler {
         try {
             int memberCount = getTotalPartyMembersCount(leader);
             if(memberCount == 0) {
-                PreparedStatement sql = connection.prepareStatement("UPDATE `data` SET `member_1`=? WHERE `leader`=?");
+                PreparedStatement sql = connection.prepareStatement("UPDATE `party` SET `member_1`=? WHERE `leader`=?");
                 sql.setString(1, member);
                 sql.setString(2, leader);
 
@@ -176,7 +176,7 @@ public class ConnectionHandler {
 
                 sql.close();
             } else if(memberCount == 1) {
-                PreparedStatement sql = connection.prepareStatement("UPDATE `data` SET `member_2`=? WHERE `leader`=?");
+                PreparedStatement sql = connection.prepareStatement("UPDATE `party` SET `member_2`=? WHERE `leader`=?");
                 sql.setString(1, member);
                 sql.setString(2, leader);
 
@@ -184,7 +184,7 @@ public class ConnectionHandler {
 
                 sql.close();
             } else if(memberCount == 2) {
-                PreparedStatement sql = connection.prepareStatement("UPDATE `data` SET `member_3`=? WHERE `leader`=?");
+                PreparedStatement sql = connection.prepareStatement("UPDATE `party` SET `member_3`=? WHERE `leader`=?");
                 sql.setString(1, member);
                 sql.setString(2, leader);
 
@@ -192,7 +192,7 @@ public class ConnectionHandler {
 
                 sql.close();
             } else if(memberCount == 3) {
-                PreparedStatement sql = connection.prepareStatement("UPDATE `data` SET `member_4`=? WHERE `leader`=?");
+                PreparedStatement sql = connection.prepareStatement("UPDATE `party` SET `member_4`=? WHERE `leader`=?");
                 sql.setString(1, member);
                 sql.setString(2, leader);
 
@@ -254,7 +254,7 @@ public class ConnectionHandler {
         if(!isPartyLeader(leader) && !isPartyMember(leader)) {
             openConnection();
             try {
-                PreparedStatement sql = connection.prepareStatement("INSERT INTO `data` values(?,?,?,?,?)");
+                PreparedStatement sql = connection.prepareStatement("INSERT INTO `party` values(?,?,?,?,?)");
                 sql.setString(1, leader);
                 sql.setString(2, invitedPlayer);
                 sql.setString(3, "null");
